@@ -1,15 +1,35 @@
 {
-  "name": "flick",
-  "version": "0.0.1",
-  "private": true,
+  "name": "@flick/cli",
+  "version": "0.1.0",
+  "description": "YAML-driven automated testing for iOS, Android, and Web — with live preview, crash detection, and local AI analysis",
+  "private": false,
   "type": "module",
   "bin": {
     "flick": "./dist/cli/index.js"
   },
+  "files": [
+    "dist",
+    "static",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "start": "node dist/cli/index.js"
+    "start": "node dist/cli/index.js",
+    "prepublishOnly": "pnpm build"
+  },
+  "keywords": [
+    "testing", "mobile", "ios", "android", "appium", "yaml", "automation", "e2e", "react-native"
+  ],
+  "author": "Gabriel",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gabbykarry/flick.git.git"
+  },
+  "homepage": "https://github.com/gabbykarry/flick.git#readme",
+  "engines": {
+    "node": ">=20.0.0"
   },
   "dependencies": {
     "@fastify/static": "^7.0.0",
