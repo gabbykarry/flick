@@ -3,7 +3,7 @@
 > YAML-driven automated testing for iOS, Android, and Web — with live preview, crash detection, and local AI analysis.
 
 ```bash
-npm install -g flick-test
+npm install -g @flick-run/cli
 flick init --platform ios
 flick run
 ```
@@ -31,7 +31,7 @@ Flick is an open-source testing tool that lets you write test flows in plain YAM
 ## Install
 
 ```bash
-npm install -g flick-test
+npm install -g @flick-run/cli
 ```
 
 Requires Node.js 20+.
