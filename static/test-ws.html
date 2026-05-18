@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<body style="background:#111;color:#fff;font-family:monospace;padding:20px">
+    <pre id="log">Testing...</pre>
+    <canvas id="cnv" width="400" height="300" style="border:1px solid #444;display:block;margin-top:12px"></canvas>
+    <script>
+        const log = document.getElementById('log')
+        const cnv = document.getElementById('cnv')
+        const ctx = cnv.getContext('2d')
+        function add(msg) { log.textContent += '\n' + msg }
+
+        const ws = new WebSocket(`ws://${location.host}/ws`)
+        ws.onopen = () => add('✓ connected')
+
+        ws.onmessage = async (e) => {
+            try {
+                const msg = JSON.parse(e.data)
+                if (msg.type !== 'frame') return
+                add(`frame: ${msg.data.length} bytes`)
+
+                // test createImageBitmap path
+                const binary = atob(msg.data)
+                const bytes = new Uint8Array(binary.length)
+                for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+                const blob = new Blob([bytes], { type: 'image/png' })
+                add(`blob created: ${blob.size} bytes`)
+
+                const bmp = await createImageBitmap(blob)
+                add(`bitmap: ${bmp.width}x${bmp.height}`)
+
+                ctx.drawImage(bmp, 0, 0, cnv.width, cnv.height)
+                add('✓ drawn to canvas')
+                bmp.close()
+            } catch (err) {
+                add('ERROR: ' + err.message)
+            }
+        }
+
+        ws.onerror = () => add('✗ ws error')
+        ws.onclose = () => add('✗ ws closed')
+    </script>
+</body>
+
+</html>

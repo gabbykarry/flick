@@ -1,0 +1,150 @@
+config:
+  platform: web
+  url: http://localhost:3000
+  retries: 2
+
+auth:
+  email: gabby@test.com
+  password: test123
+
+sessions:
+
+  - name: "Page loads correctly"
+    steps:
+      - action: wait
+        duration: 1500
+      - action: assert
+        selector: ".hero"
+        visible: true
+      - action: assert
+        selector: "#product-grid"
+        visible: true
+      - action: wait
+        duration: 1000
+
+  - name: "Browse categories"
+    steps:
+      - action: wait
+        duration: 800
+      - action: tap
+        selector: "#cat-electronics"
+      - action: wait
+        duration: 1200
+      - action: assert
+        selector: "#cat-electronics"
+        visible: true
+      - action: tap
+        selector: "#cat-fashion"
+      - action: wait
+        duration: 1200
+      - action: tap
+        selector: "#cat-accessories"
+      - action: wait
+        duration: 1200
+      - action: tap
+        selector: "#cat-all"
+      - action: wait
+        duration: 800
+
+  - name: "Sort products"
+    steps:
+      - action: wait
+        duration: 800
+      - action: tap
+        selector: "#filter-price"
+      - action: wait
+        duration: 1200
+      - action: tap
+        selector: "#filter-rating"
+      - action: wait
+        duration: 1200
+      - action: tap
+        selector: "#filter-all"
+      - action: wait
+        duration: 800
+
+  - name: "Add products to cart"
+    steps:
+      - action: wait
+        duration: 800
+      - action: tap
+        selector: "#add-to-cart-1"
+      - action: wait
+        duration: 1500
+      - action: tap
+        selector: "#add-to-cart-2"
+      - action: wait
+        duration: 1500
+      - action: tap
+        selector: "#add-to-cart-5"
+      - action: wait
+        duration: 1500
+      - action: assert
+        selector: "#cart-count"
+        visible: true
+      - action: wait
+        duration: 800
+
+  - name: "Open and close cart"
+    steps:
+      - action: wait
+        duration: 800
+      - action: tap
+        selector: "#cart-btn"
+      - action: wait
+        duration: 1500
+      - action: assert
+        selector: ".cart-drawer"
+        visible: true
+      - action: wait
+        duration: 2000
+      - action: tap
+        selector: "#checkout-btn"
+      - action: wait
+        duration: 1500
+      - action: tap
+        selector: ".cart-close"
+      - action: wait
+        duration: 1000
+
+  - name: "Login flow"
+    steps:
+      - action: wait
+        duration: 800
+      - action: tap
+        selector: "#login-btn"
+      - action: wait
+        duration: 1000
+      - action: fill
+        selector: "#email-input"
+        value: ${auth.email}
+      - action: wait
+        duration: 800
+      - action: fill
+        selector: "#password-input"
+        value: ${auth.password}
+      - action: wait
+        duration: 800
+      - action: tap
+        selector: "#login-btn"
+      - action: wait
+        duration: 1500
+      - action: assert
+        selector: "#dashboard-header"
+        visible: true
+      - action: wait
+        duration: 2000
+
+  - name: "Logout"
+    steps:
+      - action: wait
+        duration: 800
+      - action: tap
+        selector: "#logout-btn"
+      - action: wait
+        duration: 1500
+      - action: assert
+        selector: "#auth-panel"
+        visible: true
+      - action: wait
+        duration: 1000

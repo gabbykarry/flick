@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flick Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --bg: #0c0c0c;
+            --surface: #161616;
+            --surface2: #1e1e1e;
+            --surface3: #252525;
+            --border: #2a2a2a;
+            --border2: #333;
+            --text: #e8e8e8;
+            --muted: #888;
+            --dim: #444;
+            --green: #4ade80;
+            --red: #f87171;
+            --amber: #fbbf24;
+            --blue: #60a5fa;
+            --purple: #a78bfa;
+            --font: 'SF Mono', ui-monospace, 'Cascadia Code', monospace;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            font-size: 13px;
+            display: flex;
+            flex-direction: column
+        }
+
+        /* ── top bar ── */
+        #topbar {
+            height: 44px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 12px;
+            flex-shrink: 0;
+            background: var(--surface)
+        }
+
+        #topbar-logo {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: -.5px
+        }
+
+        #topbar-status {
+            font-size: 11px;
+            color: var(--muted);
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        #live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            color: var(--muted)
+        }
+
+        #live-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--dim)
+        }
+
+        #live-dot.live {
+            background: var(--green);
+            animation: pulse 1.5s infinite
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .3
+            }
+        }
+
+        /* ── main layout ── */
+        #workspace {
+            flex: 1;
+            display: flex;
+            overflow: hidden
+        }
+
+        /* ── sidebar ── */
+        #sidebar {
+            width: 220px;
+            min-width: 160px;
+            max-width: 320px;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex-shrink: 0
+        }
+
+        #sidebar-head {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        #sidebar-head span {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            color: var(--muted)
+        }
+
+        #run-count {
+            font-size: 11px;
+            color: var(--dim)
+        }
+
+        #runs-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 6px
+        }
+
+        .run-item {
+            padding: 9px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 3px;
+            border: 1px solid transparent;
+            transition: all .1s
+        }
+
+        .run-item:hover {
+            background: var(--surface2)
+        }
+
+        .run-item.active {
+            background: var(--surface3);
+            border-color: var(--border2)
+        }
+
+        .run-item-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 3px
+        }
+
+        .run-item-time {
+            font-size: 12px;
+            color: var(--text)
+        }
+
+        .run-live-badge {
+            font-size: 9px;
+            color: var(--green);
+            font-weight: 700;
+            animation: pulse 1.5s infinite
+        }
+
+        .run-item-id {
+            font-size: 10px;
+            color: var(--dim);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .run-item-stats {
+            display: flex;
+            gap: 6px;
+            font-size: 10px
+        }
+
+        .c-green {
+            color: var(--green)
+        }
+
+        .c-red {
+            color: var(--red)
+        }
+
+        .c-amber {
+            color: var(--amber)
+        }
+
+        .c-dim {
+            color: var(--dim)
+        }
+
+        /* ── center — sessions ── */
+        #center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 300px
+        }
+
+        #center-head {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0
+        }
+
+        #run-title {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        #run-meta {
+            display: flex;
+            gap: 12px;
+            margin-left: auto;
+            font-size: 11px;
+            color: var(--muted);
+            flex-shrink: 0
+        }
+
+        #center-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px
+        }
+
+        #summary-bar {
+            padding: 10px 16px;
+            border-top: 1px solid var(--border);
+            display: none;
+            gap: 16px;
+            font-size: 12px;
+            align-items: center;
+            flex-shrink: 0
+        }
+
+        #ai-section {
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+            display: none;
+            background: var(--surface)
+        }
+
+        /* ── sessions ── */
+        .session-block {
+            margin-bottom: 20px
+        }
+
+        .session-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            background: var(--surface2);
+            border-radius: 6px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            border: 1px solid var(--border)
+        }
+
+        .session-name {
+            font-size: 12px;
+            font-weight: 600
+        }
+
+        .badge {
+            font-size: 9px;
+            padding: 2px 7px;
+            border-radius: 99px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .5px
+        }
+
+        .badge-pass {
+            background: #052e16;
+            color: var(--green)
+        }
+
+        .badge-fail {
+            background: #2d0a0a;
+            color: var(--red)
+        }
+
+        .badge-crash {
+            background: #2d1a00;
+            color: var(--amber)
+        }
+
+        .session-dur {
+            font-size: 10px;
+            color: var(--dim);
+            margin-left: auto
+        }
+
+        /* ── steps ── */
+        .step-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            margin-bottom: 1px;
+            cursor: pointer;
+            transition: background .1s;
+            border: 1px solid transparent
+        }
+
+        .step-row:hover {
+            background: var(--surface2)
+        }
+
+        .step-row.expanded {
+            background: var(--surface2);
+            border-color: var(--border)
+        }
+
+        .step-icon {
+            width: 14px;
+            text-align: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+            font-size: 11px
+        }
+
+        .step-label {
+            flex: 1;
+            min-width: 0
+        }
+
+        .step-action {
+            color: var(--blue);
+            margin-right: 5px
+        }
+
+        .step-selector {
+            color: var(--muted)
+        }
+
+        .step-dur {
+            font-size: 10px;
+            color: var(--dim);
+            flex-shrink: 0;
+            margin-left: 4px
+        }
+
+        .step-detail {
+            margin-top: 6px;
+            margin-left: 22px
+        }
+
+        .step-error-box {
+            padding: 8px 10px;
+            background: #1e0808;
+            border-left: 2px solid var(--red);
+            border-radius: 3px;
+            color: #fca5a5;
+            font-size: 11px;
+            line-height: 1.6;
+            margin-bottom: 6px
+        }
+
+        .step-crash-box {
+            padding: 8px 10px;
+            background: #1e1200;
+            border-left: 2px solid var(--amber);
+            border-radius: 3px;
+            color: #fcd34d;
+            font-size: 11px;
+            line-height: 1.6;
+            margin-bottom: 6px
+        }
+
+        .step-screenshot {
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin-top: 6px;
+            cursor: zoom-in
+        }
+
+        .step-screenshot img {
+            width: 100%;
+            display: block
+        }
+
+        .step-logs {
+            margin-top: 6px;
+            padding: 8px;
+            background: var(--surface);
+            border-radius: 4px;
+            font-size: 10px;
+            color: var(--muted);
+            line-height: 1.8;
+            max-height: 100px;
+            overflow-y: auto
+        }
+
+        /* ── resizer ── */
+        .resizer {
+            width: 4px;
+            background: transparent;
+            cursor: col-resize;
+            flex-shrink: 0;
+            position: relative;
+            transition: background .15s
+        }
+
+        .resizer:hover,
+        .resizer.dragging {
+            background: var(--blue)
+        }
+
+        .resizer::after {
+            content: '';
+            position: absolute;
+            inset: -4px 0;
+            z-index: 1
+        }
+
+        /* ── preview panel ── */
+        #preview {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex-shrink: 0;
+            border-left: 1px solid var(--border);
+            width: 380px;
+            min-width: 200px;
+            max-width: 70vw
+        }
+
+        #preview-head {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0
+        }
+
+        #preview-head span {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            color: var(--muted)
+        }
+
+        #preview-platform {
+            font-size: 10px;
+            color: var(--dim);
+            margin-left: auto
+        }
+
+        #preview-body {
+            flex: 1;
+            overflow: hidden;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative
+        }
+
+        #preview-placeholder {
+            color: var(--dim);
+            font-size: 12px;
+            text-align: center;
+            line-height: 1.8;
+            padding: 24px
+        }
+
+        #preview-placeholder code {
+            background: var(--surface2);
+            padding: 2px 6px;
+            border-radius: 3px
+        }
+
+        /* the actual live view — fills the panel */
+        #live-frame {
+            position: absolute;
+            inset: 0;
+            display: none;
+            flex-direction: column
+        }
+
+        #live-frame.active {
+            display: flex
+        }
+
+        /* screenshot polling (web) */
+        #ws-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block
+        }
+
+        /* MJPEG stream (mobile) */
+        #mjpeg-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block
+        }
+
+        #preview-foot {
+            padding: 8px 14px;
+            border-top: 1px solid var(--border);
+            font-size: 10px;
+            color: var(--dim);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0
+        }
+
+        /* ── screenshot zoom overlay ── */
+        #zoom-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000000cc;
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-out
+        }
+
+        #zoom-overlay.open {
+            display: flex
+        }
+
+        #zoom-img {
+            max-width: 90vw;
+            max-height: 90vh;
+            border-radius: 8px;
+            border: 1px solid var(--border2)
+        }
+
+        /* ── empty state ── */
+        #empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--muted);
+            gap: 10px;
+            text-align: center
+        }
+
+        #empty-state h2 {
+            font-size: 15px;
+            color: var(--text)
+        }
+
+        #empty-state p {
+            font-size: 12px;
+            line-height: 1.8;
+            max-width: 240px
+        }
+
+        code {
+            background: var(--surface2);
+            padding: 2px 6px;
+            border-radius: 3px
+        }
+
+        /* ── AI ── */
+        #ai-summary-text {
+            font-size: 12px;
+            line-height: 1.7;
+            margin-bottom: 8px
+        }
+
+        .ai-list {
+            list-style: none
+        }
+
+        .ai-list li {
+            font-size: 11px;
+            color: var(--muted);
+            padding: 2px 0 2px 12px;
+            position: relative;
+            line-height: 1.6
+        }
+
+        .ai-list li::before {
+            content: '·';
+            position: absolute;
+            left: 0;
+            color: var(--dim)
+        }
+
+        #ai-provider {
+            font-size: 10px;
+            color: var(--dim);
+            margin-bottom: 8px
+        }
+
+        /* scrollbar */
+        ::-webkit-scrollbar {
+            width: 3px;
+            height: 3px
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border2);
+            border-radius: 2px
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- top bar -->
+    <div id="topbar">
+        <span id="topbar-logo">⚡ flick</span>
+        <div id="topbar-status">
+            <div id="live-indicator">
+                <div id="live-dot"></div>
+                <span id="live-label">idle</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- workspace -->
+    <div id="workspace">
+
+        <!-- sidebar -->
+        <div id="sidebar">
+            <div id="sidebar-head">
+                <span>Runs</span>
+                <span id="run-count">—</span>
+            </div>
+            <div id="runs-list"></div>
+        </div>
+
+        <!-- sidebar resizer -->
+        <div class="resizer" id="resizer-sidebar"></div>
+
+        <!-- center -->
+        <div id="center">
+            <div id="center-head">
+                <span id="run-title" style="color:var(--muted)">Select a run</span>
+                <div id="run-meta"></div>
+            </div>
+            <div id="center-body">
+                <div id="empty-state">
+                    <h2>No run selected</h2>
+                    <p>Run <code>flick run</code> to start a test.<br />Results appear here in real time.</p>
+                </div>
+            </div>
+            <div id="summary-bar" style="display:none">
+                <span><span class="c-green" id="s-pass">0</span> passed</span>
+                <span><span class="c-red" id="s-fail">0</span> failed</span>
+                <span><span class="c-amber" id="s-crash">0</span> crashed</span>
+                <span class="c-dim" id="s-skip">0 skipped</span>
+                <span class="c-dim" style="margin-left:auto" id="s-dur"></span>
+            </div>
+            <div id="ai-section" style="display:none">
+                <div id="ai-provider"></div>
+                <div id="ai-summary-text"></div>
+                <ul class="ai-list" id="ai-suggestions"></ul>
+                <ul class="ai-list" id="ai-patterns"></ul>
+            </div>
+        </div>
+
+        <!-- preview resizer -->
+        <div class="resizer" id="resizer-preview"></div>
+
+        <!-- live preview panel -->
+        <div id="preview">
+            <div id="preview-head">
+                <div id="live-dot-panel" style="width:6px;height:6px;border-radius:50%;background:var(--dim)"></div>
+                <span>Live Preview</span>
+                <span id="preview-platform">—</span>
+            </div>
+            <div id="preview-body">
+                <div id="preview-placeholder">
+                    Waiting for a run…<br /><br />
+                    Run <code>flick run</code><br />to see the live stream here.
+                </div>
+                <!-- live frames -->
+                <div id="live-frame" class="">
+                    <canvas id="live-canvas" style="position:absolute;inset:0;display:none"></canvas>
+                    <img id="mjpeg-img" src="" alt="mobile stream"
+                        style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain" />
+                </div>
+            </div>
+            <div id="preview-foot">
+                <span id="preview-mode">—</span>
+                <span id="preview-fps"></span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- zoom overlay -->
+    <div id="zoom-overlay" onclick="closeZoom()">
+        <img id="zoom-img" alt="screenshot" />
+    </div>
+
+    <script>
+        // ── State ─────────────────────────────────────────────────────────────────────
+        let runs = []
+        let activeRunId = null
+        let ws = null
+        let streamMode = 'none'
+        let frameCount = 0
+        let fpsTimer = null
+        let lastFrameTime = 0
+
+        // ── Boot ──────────────────────────────────────────────────────────────────────
+        async function boot() {
+            setupResizers()
+            await fetchRuns()
+            connectWebSocket()
+            setInterval(fetchRuns, 2500)
+        }
+
+        // ── Fetch runs ────────────────────────────────────────────────────────────────
+        async function fetchRuns() {
+            try {
+                const res = await fetch('/api/runs')
+                const fresh = await res.json()
+                const liveRun = fresh.find(r => !r.finishedAt)
+
+                // auto-select on first load
+                if (!activeRunId && fresh.length > 0) {
+                    runs = fresh
+                    selectRun(liveRun ? liveRun.id : fresh[0].id)
+                    return
+                }
+
+                runs = fresh
+                renderSidebar()
+                document.getElementById('run-count').textContent = `${runs.length}`
+
+                // refresh active run — but only re-render if run is still live
+                // if finished, don't touch the DOM so expanded steps stay open
+                if (activeRunId) {
+                    const updated = runs.find(r => r.id === activeRunId)
+                    if (updated) {
+                        if (!updated.finishedAt) {
+                            // still running — update content
+                            renderRun(updated)
+                        } else {
+                            // finished — only update the summary bar and title, leave steps alone
+                            updateSummaryOnly(updated)
+                        }
+                    }
+                }
+
+                // always sync preview state on every poll — source of truth
+                const activeRun = runs.find(r => r.id === activeRunId)
+                if (activeRun) {
+                    const isLive = !activeRun.finishedAt
+                    updatePreviewMode(activeRun.platform, isLive)
+                    setLive(isLive, isLive ? activeRun.platform : null)
+                }
+            } catch { }
+        }
+
+        // ── Sidebar ───────────────────────────────────────────────────────────────────
+        function renderSidebar() {
+            const list = document.getElementById('runs-list')
+            if (runs.length === 0) {
+                list.innerHTML = '<div style="padding:20px 12px;color:var(--dim);font-size:11px;text-align:center">No runs yet.<br/>Run <code>flick run</code></div>'
+                return
+            }
+            list.innerHTML = runs.map(run => {
+                const d = new Date(run.startedAt)
+                const time = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+                const date = `${d.getMonth() + 1}/${d.getDate()}`
+                const s = run.summary
+                const isLive = !run.finishedAt
+                return `<div class="run-item ${run.id === activeRunId ? 'active' : ''}" onclick="selectRun('${run.id}')">
+      <div class="run-item-top">
+        <span class="run-item-time">${date} ${time}</span>
+        ${isLive ? '<span class="run-live-badge">● LIVE</span>' : ''}
+      </div>
+      <div class="run-item-id">${run.id}</div>
+      <div class="run-item-stats">
+        <span class="c-green">✓${s.passed}</span>
+        ${s.failed > 0 ? `<span class="c-red">✗${s.failed}</span>` : ''}
+        ${s.crashed > 0 ? `<span class="c-amber">⚡${s.crashed}</span>` : ''}
+        <span class="c-dim" style="margin-left:auto">${run.platform}</span>
+      </div>
+    </div>`
+            }).join('')
+        }
+
+        // ── Select run ────────────────────────────────────────────────────────────────
+        function selectRun(id) {
+            activeRunId = id
+            renderSidebar()
+            const run = runs.find(r => r.id === id)
+            if (run) {
+                renderRun(run)
+                const isLive = !run.finishedAt
+                updatePreviewMode(run.platform, isLive)
+            }
+        }
+
+        // ── Render run ────────────────────────────────────────────────────────────────
+        function renderRun(run) {
+            const dur = run.finishedAt
+                ? `${((new Date(run.finishedAt) - new Date(run.startedAt)) / 1000).toFixed(1)}s`
+                : 'running…'
+
+            document.getElementById('run-title').textContent = run.id
+            document.getElementById('run-title').style.color = ''
+            document.getElementById('run-meta').innerHTML =
+                `<span>${run.platform}</span><span>${dur}</span>`
+
+            const body = document.getElementById('center-body')
+            if (!run.sessions || run.sessions.length === 0) {
+                body.innerHTML = '<div id="empty-state"><h2>Starting…</h2><p>Steps will appear here as they run.</p></div>'
+                return
+            }
+
+            body.innerHTML = run.sessions.map(s => renderSession(s)).join('')
+
+            // summary bar
+            const sm = run.summary
+            document.getElementById('s-pass').textContent = sm.passed
+            document.getElementById('s-fail').textContent = sm.failed
+            document.getElementById('s-crash').textContent = sm.crashed
+            document.getElementById('s-skip').textContent = sm.skipped + ' skipped'
+            document.getElementById('s-dur').textContent = dur
+            document.getElementById('summary-bar').style.display = 'flex'
+
+            // AI
+            renderAi(run)
+        }
+
+        // ── Summary-only update (run finished — don't touch expanded steps) ──────────
+        function updateSummaryOnly(run) {
+            const dur = run.finishedAt
+                ? `${((new Date(run.finishedAt) - new Date(run.startedAt)) / 1000).toFixed(1)}s`
+                : 'running…'
+            document.getElementById('run-title').textContent = run.id
+            document.getElementById('run-meta').innerHTML =
+                `<span>${run.platform}</span><span>${dur}</span>`
+            const sm = run.summary
+            document.getElementById('s-pass').textContent = sm.passed
+            document.getElementById('s-fail').textContent = sm.failed
+            document.getElementById('s-crash').textContent = sm.crashed
+            document.getElementById('s-skip').textContent = sm.skipped + ' skipped'
+            document.getElementById('s-dur').textContent = dur
+            document.getElementById('summary-bar').style.display = 'flex'
+            renderAi(run)
+        }
+
+        // ── Render session ────────────────────────────────────────────────────────────
+        function renderSession(session) {
+            const bc = session.status === 'passed' ? 'badge-pass' : session.status === 'crashed' ? 'badge-crash' : 'badge-fail'
+            const dur = `${(session.durationMs / 1000).toFixed(1)}s`
+            return `<div class="session-block">
+    <div class="session-head">
+      <span class="session-name">${esc(session.name)}</span>
+      <span class="badge ${bc}">${session.status}</span>
+      <span class="session-dur">${session.steps.length} steps · ${dur}</span>
+    </div>
+    ${session.steps.map((step, i) => renderStep(step, session.name, i)).join('')}
+  </div>`
+        }
+
+        // ── Render step ───────────────────────────────────────────────────────────────
+        function renderStep(step, sessionName, i) {
+            const icon = step.status === 'passed'
+                ? '<span style="color:var(--green)">✓</span>'
+                : step.status === 'crashed'
+                    ? '<span style="color:var(--amber)">⚡</span>'
+                    : '<span style="color:var(--red)">✗</span>'
+
+            const selector = step.selector
+                ? `<span class="step-selector">${esc(step.selector)}</span>`
+                : step.value
+                    ? `<span class="step-selector">"${esc(step.value.slice(0, 30))}"</span>`
+                    : ''
+
+            const id = `s-${sessionName.replace(/\W/g, '_')}-${i}`
+
+            let detail = ''
+            if (step.error) {
+                detail += `<div class="step-error-box"><strong>${esc(step.error.type)}</strong>  ${esc(step.error.message.slice(0, 200))}</div>`
+                if (step.error.screenshot) {
+                    detail += `<div class="step-screenshot" onclick="zoomScreenshot('${step.error.screenshot}')"><img src="data:image/png;base64,${step.error.screenshot}" loading="lazy"/></div>`
+                }
+                if (step.error.logs?.length) {
+                    detail += `<div class="step-logs">${step.error.logs.slice(0, 8).map(esc).join('<br/>')}</div>`
+                }
+            }
+            if (step.crash) {
+                detail += `<div class="step-crash-box"><strong>Crash</strong>  ${esc(step.crash.lastEvent)}<br/>retries: ${step.crash.retryAttempts} · skipped: ${step.crash.skipped}</div>`
+                if (step.crash.screenshot) {
+                    detail += `<div class="step-screenshot" onclick="zoomScreenshot('${step.crash.screenshot}')"><img src="data:image/png;base64,${step.crash.screenshot}" loading="lazy"/></div>`
+                }
+            }
+
+            const hasDetail = detail.length > 0
+            return `<div class="step-row" id="${id}" ${hasDetail ? `onclick="toggleStep('${id}')"` : ''}>
+    <div class="step-icon">${icon}</div>
+    <div class="step-label">
+      <span class="step-action">${esc(step.action)}</span>${selector}
+      ${hasDetail ? `<div id="${id}-det" style="display:none" class="step-detail">${detail}</div>` : ''}
+    </div>
+    <div class="step-dur">${step.durationMs}ms</div>
+  </div>`
+        }
+
+        function toggleStep(id) {
+            const det = document.getElementById(id + '-det')
+            if (!det) return
+            const open = det.style.display !== 'none'
+            det.style.display = open ? 'none' : 'block'
+            document.getElementById(id).classList.toggle('expanded', !open)
+        }
+
+        // ── AI ────────────────────────────────────────────────────────────────────────
+        function renderAi(run) {
+            const panel = document.getElementById('ai-section')
+            if (!run.analysis || run.analysis.provider === 'none') { panel.style.display = 'none'; return }
+            panel.style.display = 'block'
+            document.getElementById('ai-provider').textContent = `${run.analysis.provider} · ${run.analysis.model}`
+            document.getElementById('ai-summary-text').textContent = run.analysis.summary
+            document.getElementById('ai-suggestions').innerHTML = (run.analysis.suggestions || []).map(s => `<li>${esc(s)}</li>`).join('')
+            document.getElementById('ai-patterns').innerHTML = (run.analysis.patterns || []).map(p => `<li style="color:var(--amber)">${esc(p)}</li>`).join('')
+        }
+
+        // ── Live preview ──────────────────────────────────────────────────────────────
+        function setLive(isLive, platform) {
+            const dot = document.getElementById('live-dot')
+            const label = document.getElementById('live-label')
+            dot.className = isLive ? 'live' : ''
+            label.textContent = isLive ? `live · ${platform}` : 'idle'
+        }
+
+        function updatePreviewMode(platform, isLive) {
+            const dot = document.getElementById('live-dot-panel')
+            const modeEl = document.getElementById('preview-mode')
+            const platformEl = document.getElementById('preview-platform')
+            const previewPanel = document.getElementById('preview')
+
+            platformEl.textContent = platform || '—'
+
+            // mobile — hide the entire preview panel
+            // user can see the simulator directly on their screen
+            if (platform === 'android' || platform === 'ios') {
+                previewPanel.style.display = 'none'
+                document.getElementById('resizer-preview').style.display = 'none'
+                return
+            }
+
+            // web — show preview panel
+            previewPanel.style.display = 'flex'
+            document.getElementById('resizer-preview').style.display = 'block'
+
+            if (!isLive) {
+                dot.style.background = 'var(--dim)'
+                modeEl.textContent = 'run complete'
+                return
+            }
+
+            dot.style.background = 'var(--green)'
+            document.getElementById('preview-placeholder').style.display = 'none'
+            document.getElementById('live-frame').classList.add('active')
+            document.getElementById('ws-img').style.display = 'block'
+            document.getElementById('mjpeg-img').style.display = 'none'
+            modeEl.textContent = 'web · live'
+            streamMode = 'ws'
+        }
+
+        // ── WebSocket ─────────────────────────────────────────────────────────────────
+        function connectWebSocket() {
+            try {
+                ws = new WebSocket(`ws://${location.host}/ws`)
+
+                ws.onopen = () => {
+                    // start FPS counter
+                    fpsTimer = setInterval(() => {
+                        const fps = frameCount
+                        frameCount = 0
+                        if (streamMode === 'ws') {
+                            document.getElementById('preview-fps').textContent = fps > 0 ? `${fps} fps` : ''
+                        }
+                    }, 1000)
+                }
+
+                // ── Smooth frame renderer ─────────────────────────────────────────────────
+                // createImageBitmap decodes off main thread — no flicker, no blank frames.
+                // One requestAnimationFrame loop runs at 60fps and paints pending bitmaps.
+                // Canvas is NEVER resized inside the render loop — resizing clears it.
+                const dpr = window.devicePixelRatio || 1
+                let pendingBitmap = null
+                let isRendering = false
+                let cnvW = 0  // last known canvas buffer width
+                let cnvH = 0  // last known canvas buffer height
+
+                // set up canvas size once — called on first frame and on window resize
+                function initCanvas() {
+                    const cnv = document.getElementById('live-canvas')
+                    const box = document.getElementById('preview-body')
+                    const w = box.clientWidth || 300
+                    const h = box.clientHeight || 400
+                    cnvW = Math.round(w * dpr)
+                    cnvH = Math.round(h * dpr)
+                    cnv.width = cnvW
+                    cnv.height = cnvH
+                    cnv.style.width = w + 'px'
+                    cnv.style.height = h + 'px'
+                }
+
+                // resize canvas on window resize — but repaint immediately with last bitmap
+                window.addEventListener('resize', () => {
+                    if (!isRendering) return
+                    initCanvas()
+                    // force repaint by re-requesting a new frame from screencaster
+                    // (next arriving frame will fill the canvas)
+                })
+
+                // the render loop — runs forever, only draws when there is a new bitmap
+                function renderLoop() {
+                    const bmp = pendingBitmap
+                    if (bmp) {
+                        pendingBitmap = null
+                        const cnv = document.getElementById('live-canvas')
+                        const ctx = cnv.getContext('2d')
+                        // only resize if container changed — resizing clears the canvas
+                        const box = document.getElementById('preview-body')
+                        const newW = Math.round((box.clientWidth || 300) * dpr)
+                        const newH = Math.round((box.clientHeight || 400) * dpr)
+                        if (newW !== cnvW || newH !== cnvH) {
+                            cnvW = newW
+                            cnvH = newH
+                            cnv.width = cnvW
+                            cnv.height = cnvH
+                            cnv.style.width = (box.clientWidth || 300) + 'px'
+                            cnv.style.height = (box.clientHeight || 400) + 'px'
+                            // after resize canvas is blank — drawImage below fills it immediately
+                        }
+                        // letterbox: scale to fit, center, pixel-perfect
+                        const scale = Math.min(cnvW / bmp.width, cnvH / bmp.height)
+                        const x = Math.round((cnvW - bmp.width * scale) / 2)
+                        const y = Math.round((cnvH - bmp.height * scale) / 2)
+                        // only clear the letterbox areas, not the image area — avoids flash
+                        ctx.fillStyle = '#000'
+                        ctx.fillRect(0, 0, cnvW, cnvH)
+                        ctx.drawImage(bmp, x, y, Math.round(bmp.width * scale), Math.round(bmp.height * scale))
+                        bmp.close()
+                    }
+                    requestAnimationFrame(renderLoop)
+                }
+
+                requestAnimationFrame(renderLoop)
+
+                ws.onmessage = (e) => {
+                    try {
+                        const msg = JSON.parse(e.data)
+                        if (msg.type !== 'frame') return
+
+                        // first frame — reveal the panel
+                        if (!isRendering) {
+                            isRendering = true
+                            initCanvas()
+                            const cnv = document.getElementById('live-canvas')
+                            cnv.style.display = 'block'
+                            document.getElementById('preview-placeholder').style.display = 'none'
+                            document.getElementById('live-frame').classList.add('active')
+                        }
+
+                        frameCount++
+
+                        // base64 → Blob → ImageBitmap entirely off the main thread
+                        const binary = atob(msg.data)
+                        const bytes = new Uint8Array(binary.length)
+                        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+                        createImageBitmap(new Blob([bytes], { type: 'image/png' })).then(bitmap => {
+                            if (pendingBitmap) pendingBitmap.close()
+                            pendingBitmap = bitmap
+                        }).catch(() => { })
+
+                    } catch { }
+                }
+
+                ws.onclose = () => {
+                    clearInterval(fpsTimer)
+                    setTimeout(connectWebSocket, 2000)
+                }
+
+                ws.onerror = () => ws.close()
+            } catch { }
+        }
+
+        // ── Screenshot zoom ───────────────────────────────────────────────────────────
+        function zoomScreenshot(base64) {
+            document.getElementById('zoom-img').src = `data:image/png;base64,${base64}`
+            document.getElementById('zoom-overlay').classList.add('open')
+        }
+        function closeZoom() {
+            document.getElementById('zoom-overlay').classList.remove('open')
+        }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeZoom() })
+
+        // ── Resizable panels ──────────────────────────────────────────────────────────
+        function setupResizers() {
+            makeResizer('resizer-sidebar', 'sidebar', 'horizontal', 160, 320)
+            makeResizer('resizer-preview', 'preview', 'horizontal-reverse', 200, window.innerWidth * 0.7)
+        }
+
+        function makeResizer(resizerId, targetId, direction, min, max) {
+            const resizer = document.getElementById(resizerId)
+            const target = document.getElementById(targetId)
+            let startX, startW
+
+            resizer.addEventListener('mousedown', e => {
+                startX = e.clientX
+                startW = target.getBoundingClientRect().width
+                resizer.classList.add('dragging')
+                document.body.style.cursor = 'col-resize'
+                document.body.style.userSelect = 'none'
+
+                function onMove(e) {
+                    const delta = direction === 'horizontal'
+                        ? e.clientX - startX
+                        : startX - e.clientX
+                    const newW = Math.min(max, Math.max(min, startW + delta))
+                    target.style.width = newW + 'px'
+                }
+
+                function onUp() {
+                    resizer.classList.remove('dragging')
+                    document.body.style.cursor = ''
+                    document.body.style.userSelect = ''
+                    document.removeEventListener('mousemove', onMove)
+                    document.removeEventListener('mouseup', onUp)
+                }
+
+                document.addEventListener('mousemove', onMove)
+                document.addEventListener('mouseup', onUp)
+                e.preventDefault()
+            })
+        }
+
+        // ── Helpers ───────────────────────────────────────────────────────────────────
+        function esc(str) {
+            if (!str) return ''
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+        }
+        function pad(n) { return String(n).padStart(2, '0') }
+
+        boot()
+    </script>
+</body>
+
+</html>

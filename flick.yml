@@ -1,0 +1,111 @@
+config:
+  platform: ios
+  app: FlickStore
+  retries: 2
+
+auth:
+  email: gabby@test.com
+  password: test123
+
+sessions:
+
+  - name: "App launches"
+    steps:
+      - action: wait
+        duration: 2000
+      - action: assert
+        selector: "~app-root"
+        visible: true
+
+  - name: "Navigate tabs"
+    steps:
+      - action: tap
+        selector: "~tab-shop"
+      - action: wait
+        duration: 1200
+      - action: assert
+        selector: "~shop-screen"
+        visible: true
+      - action: tap
+        selector: "~tab-cart"
+      - action: wait
+        duration: 1200
+      - action: assert
+        selector: "~cart-screen"
+        visible: true
+      - action: tap
+        selector: "~tab-home"
+      - action: wait
+        duration: 800
+
+  - name: "Add products to cart"
+    steps:
+      - action: tap
+        selector: "~add-to-cart-1"
+      - action: wait
+        duration: 800
+      - action: tap
+        selector: "~add-to-cart-2"
+      - action: wait
+        duration: 800
+      - action: assert
+        selector: "~cart-badge"
+        visible: true
+      - action: tap
+        selector: "~tab-cart"
+      - action: wait
+        duration: 1000
+      - action: assert
+        selector: "~cart-item-1"
+        visible: true
+
+  - name: "Login flow"
+    steps:
+      - action: tap
+        selector: "~tab-account"
+      - action: wait
+        duration: 1000
+      - action: assert
+        selector: "~account-screen"
+        visible: true
+      - action: tap
+        selector: "~email-input"
+      - action: wait
+        duration: 500
+      - action: fill
+        selector: "~email-input"
+        value: ${auth.email}
+      - action: tap
+        selector: "~password-input"
+      - action: wait
+        duration: 500
+      - action: fill
+        selector: "~password-input"
+        value: ${auth.password}
+      - action: wait
+        duration: 1000
+      # tap the page title to dismiss keyboard — button is then in correct position
+      - action: tap
+        selector: "~account-screen"
+      - action: wait
+        duration: 800
+      - action: tap
+        selector: "~login-btn"
+      - action: wait
+        duration: 3000
+      - action: assert
+        selector: "~dashboard-screen"
+        visible: true
+
+  - name: "Logout"
+    steps:
+      - action: assert
+        selector: "~dashboard-screen"
+        visible: true
+      - action: tap
+        selector: "~logout-btn"
+      - action: wait
+        duration: 1500
+      - action: assert
+        selector: "~account-screen"
+        visible: true

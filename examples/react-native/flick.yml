@@ -1,0 +1,25 @@
+config:
+  platform: android
+  app: ./build/app.apk
+  retries: 2
+
+auth:
+  email: test@example.com
+  password: ${TEST_PASSWORD}
+
+sessions:
+  - name: "Login flow"
+    steps:
+      - action: tap
+        selector: "~login-button"
+      - action: fill
+        selector: "~email-input"
+        value: ${auth.email}
+      - action: fill
+        selector: "~password-input"
+        value: ${auth.password}
+      - action: tap
+        selector: "~submit"
+      - action: assert
+        selector: "~dashboard-header"
+        visible: true

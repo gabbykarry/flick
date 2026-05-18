@@ -1,0 +1,25 @@
+config:
+  platform: web
+  url: https://app.example.com
+  retries: 2
+
+auth:
+  email: test@example.com
+  password: ${TEST_PASSWORD}
+
+sessions:
+  - name: "Login flow"
+    steps:
+      - action: tap
+        selector: "#login-btn"
+      - action: fill
+        selector: "#email"
+        value: ${auth.email}
+      - action: fill
+        selector: "#password"
+        value: ${auth.password}
+      - action: tap
+        selector: "#submit"
+      - action: assert
+        selector: "#dashboard"
+        visible: true

@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flick Store — Demo</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --black: #111;
+            --white: #fff;
+            --gray: #f4f4f4;
+            --border: #e5e5e5;
+            --accent: #2563eb;
+            --red: #dc2626;
+            --green: #16a34a
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--white);
+            color: var(--black);
+            font-size: 15px
+        }
+
+        /* NAV */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--black);
+            height: 64px;
+            display: flex;
+            align-items: center;
+            padding: 0 48px;
+            gap: 32px;
+            border-bottom: 1px solid #222
+        }
+
+        .nav-logo {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-right: auto
+        }
+
+        .nav-link {
+            color: #aaa;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color .15s
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #fff
+        }
+
+        #cart-btn {
+            background: #fff;
+            color: #111;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        #cart-count {
+            background: var(--accent);
+            color: #fff;
+            border-radius: 99px;
+            padding: 1px 7px;
+            font-size: 11px;
+            font-weight: 800
+        }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(160deg, #111 0%, #1e3a8a 100%);
+            color: #fff;
+            padding: 100px 48px;
+            min-height: 500px;
+            display: flex;
+            align-items: center;
+            gap: 80px
+        }
+
+        .hero-text {
+            max-width: 560px
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: #2563eb22;
+            color: #60a5fa;
+            border: 1px solid #2563eb44;
+            padding: 4px 14px;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            letter-spacing: .5px
+        }
+
+        .hero h1 {
+            font-size: 52px;
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 20px
+        }
+
+        .hero p {
+            font-size: 17px;
+            color: #94a3b8;
+            line-height: 1.7;
+            margin-bottom: 32px
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 12px
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            display: inline-block;
+            transition: background .15s
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8
+        }
+
+        .btn-secondary {
+            background: #ffffff15;
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid #ffffff30;
+            text-decoration: none;
+            display: inline-block
+        }
+
+        .hero-visual {
+            font-size: 120px;
+            animation: float 3s ease-in-out infinite
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0)
+            }
+
+            50% {
+                transform: translateY(-12px)
+            }
+        }
+
+        /* CATEGORIES */
+        .section {
+            padding: 64px 48px
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 8px
+        }
+
+        .section-sub {
+            font-size: 15px;
+            color: #666;
+            margin-bottom: 36px
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px
+        }
+
+        .category-card {
+            background: var(--gray);
+            border-radius: 12px;
+            padding: 28px 20px;
+            cursor: pointer;
+            transition: all .15s;
+            border: 2px solid transparent;
+            text-align: center
+        }
+
+        .category-card:hover,
+        .category-card.active {
+            background: #eff6ff;
+            border-color: var(--accent)
+        }
+
+        .category-icon {
+            font-size: 36px;
+            margin-bottom: 10px
+        }
+
+        .category-name {
+            font-size: 14px;
+            font-weight: 700
+        }
+
+        .category-count {
+            font-size: 12px;
+            color: #666;
+            margin-top: 2px
+        }
+
+        /* PRODUCTS */
+        #products-section {
+            padding: 0 48px 64px
+        }
+
+        .products-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px
+        }
+
+        .products-header h2 {
+            font-size: 22px;
+            font-weight: 800
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 8px
+        }
+
+        .filter-btn {
+            padding: 7px 16px;
+            border-radius: 99px;
+            border: 1px solid var(--border);
+            background: #fff;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all .15s
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--black);
+            color: #fff;
+            border-color: var(--black)
+        }
+
+        .products {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px
+        }
+
+        .product-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all .15s
+        }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1)
+        }
+
+        .product-img {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 72px;
+            background: var(--gray);
+            position: relative
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: var(--red);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 99px;
+            text-transform: uppercase
+        }
+
+        .product-info {
+            padding: 16px
+        }
+
+        .product-cat {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: 4px
+        }
+
+        .product-name {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            line-height: 1.3
+        }
+
+        .product-rating {
+            font-size: 12px;
+            color: #f59e0b;
+            margin-bottom: 10px
+        }
+
+        .product-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .product-price {
+            font-size: 20px;
+            font-weight: 800
+        }
+
+        .product-original {
+            font-size: 13px;
+            color: #999;
+            text-decoration: line-through;
+            margin-left: 6px
+        }
+
+        .add-btn {
+            background: var(--black);
+            color: #fff;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .15s
+        }
+
+        .add-btn:hover {
+            background: #333
+        }
+
+        .add-btn.added {
+            background: var(--green)
+        }
+
+        /* FEATURES */
+        .features {
+            background: var(--gray);
+            padding: 64px 48px
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-top: 36px
+        }
+
+        .feature-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 28px;
+            border: 1px solid var(--border)
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 14px
+        }
+
+        .feature-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px
+        }
+
+        .feature-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6
+        }
+
+        /* AUTH */
+        #auth-section {
+            padding: 64px 48px;
+            background: #fff
+        }
+
+        .auth-container {
+            max-width: 460px;
+            margin: 0 auto
+        }
+
+        .auth-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 48px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06)
+        }
+
+        .auth-card h2 {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: -.5px
+        }
+
+        .auth-card p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 32px
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px
+        }
+
+        .form-group {
+            margin-bottom: 16px
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border .15s;
+            background: #fafafa
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent);
+            background: #fff
+        }
+
+        #login-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--black);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background .15s
+        }
+
+        #login-btn:hover {
+            background: #333
+        }
+
+        .auth-divider {
+            text-align: center;
+            color: #999;
+            font-size: 13px;
+            margin: 20px 0;
+            position: relative
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 42%;
+            height: 1px;
+            background: var(--border)
+        }
+
+        .auth-divider::before {
+            left: 0
+        }
+
+        .auth-divider::after {
+            right: 0
+        }
+
+        .social-btn {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            background: #fff;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background .15s
+        }
+
+        .social-btn:hover {
+            background: var(--gray)
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #666
+        }
+
+        .auth-footer a {
+            color: var(--accent);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none
+        }
+
+        /* DASHBOARD */
+        #dashboard-panel {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto
+        }
+
+        .dash-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border)
+        }
+
+        .dash-welcome h2 {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -.5px
+        }
+
+        #dashboard-header {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -.5px
+        }
+
+        .dash-welcome p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 4px
+        }
+
+        #logout-btn {
+            background: none;
+            border: 1.5px solid var(--border);
+            padding: 9px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .15s
+        }
+
+        #logout-btn:hover {
+            background: var(--black);
+            color: #fff;
+            border-color: var(--black)
+        }
+
+        .dash-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 32px
+        }
+
+        .stat-card {
+            background: var(--gray);
+            border-radius: 12px;
+            padding: 20px 24px
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -1px
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+            margin-top: 2px
+        }
+
+        .orders-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px
+        }
+
+        .order-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: background .15s
+        }
+
+        .order-row:hover {
+            background: var(--gray)
+        }
+
+        .order-emoji {
+            font-size: 28px;
+            width: 48px;
+            height: 48px;
+            background: var(--gray);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .order-info {
+            flex: 1
+        }
+
+        .order-name {
+            font-size: 14px;
+            font-weight: 600
+        }
+
+        .order-meta {
+            font-size: 12px;
+            color: #666;
+            margin-top: 2px
+        }
+
+        .order-amount {
+            font-size: 15px;
+            font-weight: 800;
+            margin-right: 12px
+        }
+
+        .status {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 99px;
+            text-transform: uppercase;
+            letter-spacing: .3px
+        }
+
+        .status-delivered {
+            background: #dcfce7;
+            color: #166534
+        }
+
+        .status-transit {
+            background: #fef9c3;
+            color: #713f12
+        }
+
+        .status-processing {
+            background: #dbeafe;
+            color: #1e40af
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: var(--black);
+            color: #fff;
+            padding: 14px 22px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all .25s;
+            z-index: 1000;
+            max-width: 320px;
+            line-height: 1.4
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1
+        }
+
+        /* CART DRAWER */
+        .cart-overlay {
+            position: fixed;
+            inset: 0;
+            background: #00000055;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .2s
+        }
+
+        .cart-overlay.open {
+            opacity: 1;
+            pointer-events: all
+        }
+
+        .cart-drawer {
+            position: fixed;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 400px;
+            background: #fff;
+            z-index: 201;
+            transform: translateX(100%);
+            transition: transform .25s;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12)
+        }
+
+        .cart-drawer.open {
+            transform: translateX(0)
+        }
+
+        .cart-head {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .cart-head h3 {
+            font-size: 18px;
+            font-weight: 800
+        }
+
+        .cart-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #666;
+            padding: 4px
+        }
+
+        .cart-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border)
+        }
+
+        .cart-item-emoji {
+            font-size: 32px;
+            width: 56px;
+            height: 56px;
+            background: var(--gray);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0
+        }
+
+        .cart-item-info {
+            flex: 1
+        }
+
+        .cart-item-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px
+        }
+
+        .cart-item-price {
+            font-size: 13px;
+            color: #666
+        }
+
+        .cart-item-remove {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px
+        }
+
+        .cart-foot {
+            padding: 20px 24px;
+            border-top: 1px solid var(--border)
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 16px
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer
+        }
+
+        .cart-empty {
+            text-align: center;
+            padding: 48px 20px;
+            color: #999
+        }
+
+        .cart-empty div {
+            font-size: 48px;
+            margin-bottom: 12px
+        }
+
+        footer {
+            background: var(--black);
+            color: #666;
+            padding: 40px 48px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <span class="nav-logo">FLICK STORE</span>
+        <a class="nav-link active" href="#hero">Home</a>
+        <a class="nav-link" href="#products-section">Shop</a>
+        <a class="nav-link" href="#auth-section">Account</a>
+        <button id="cart-btn">🛒 Cart <span id="cart-count">0</span></button>
+    </nav>
+
+    <!-- HERO -->
+    <div class="hero" id="hero">
+        <div class="hero-text">
+            <div class="hero-badge">✦ New arrivals 2026</div>
+            <h1>Style meets performance</h1>
+            <p>Premium products curated for the modern lifestyle. Free shipping on orders over $50. 30-day returns.</p>
+            <div class="hero-actions">
+                <a class="btn-primary" href="#products-section" id="shop-now-btn">Shop now</a>
+                <a class="btn-secondary" href="#auth-section">Sign in</a>
+            </div>
+        </div>
+        <div class="hero-visual">🛍️</div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="section" id="categories-section">
+        <div class="section-title">Shop by category</div>
+        <div class="section-sub">Find exactly what you're looking for</div>
+        <div class="categories">
+            <div class="category-card active" id="cat-all" onclick="filterCategory('all')">
+                <div class="category-icon">✨</div>
+                <div class="category-name">All Products</div>
+                <div class="category-count">12 items</div>
+            </div>
+            <div class="category-card" id="cat-electronics" onclick="filterCategory('electronics')">
+                <div class="category-icon">⚡</div>
+                <div class="category-name">Electronics</div>
+                <div class="category-count">4 items</div>
+            </div>
+            <div class="category-card" id="cat-fashion" onclick="filterCategory('fashion')">
+                <div class="category-icon">👗</div>
+                <div class="category-name">Fashion</div>
+                <div class="category-count">5 items</div>
+            </div>
+            <div class="category-card" id="cat-accessories" onclick="filterCategory('accessories')">
+                <div class="category-icon">💍</div>
+                <div class="category-name">Accessories</div>
+                <div class="category-count">3 items</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div id="products-section">
+        <div class="products-header">
+            <h2 id="products-title">All Products</h2>
+            <div class="filter-bar">
+                <button class="filter-btn active" id="filter-all" onclick="sortProducts('all')">All</button>
+                <button class="filter-btn" id="filter-price" onclick="sortProducts('price')">Price ↑</button>
+                <button class="filter-btn" id="filter-rating" onclick="sortProducts('rating')">Top Rated</button>
+            </div>
+        </div>
+        <div class="products" id="product-grid"></div>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="features" id="features-section">
+        <div class="section-title">Why Flick Store?</div>
+        <div class="section-sub">Everything you need, nothing you don't</div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <div class="feature-title">Free fast shipping</div>
+                <div class="feature-desc">Orders over $50 ship free. Express delivery available in 24h.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <div class="feature-title">Easy returns</div>
+                <div class="feature-desc">Not satisfied? Return anything within 30 days, no questions asked.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-title">Secure checkout</div>
+                <div class="feature-desc">256-bit SSL encryption. Your data is always safe with us.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <div class="feature-title">24/7 support</div>
+                <div class="feature-desc">Real humans ready to help whenever you need us.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTH -->
+    <div id="auth-section">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div id="auth-panel">
+                    <h2>Welcome back</h2>
+                    <p>Sign in to your account to view orders and manage your profile.</p>
+                    <button class="social-btn" id="google-btn">🌐 Continue with Google</button>
+                    <div class="auth-divider">or</div>
+                    <div class="form-group">
+                        <label for="email-input">Email address</label>
+                        <input type="email" id="email-input" placeholder="you@example.com" />
+                    </div>
+                    <div class="form-group">
+                        <label for="password-input">Password</label>
+                        <input type="password" id="password-input" placeholder="••••••••" />
+                    </div>
+                    <button id="login-btn">Sign in to account</button>
+                    <div class="auth-footer">Don't have an account? <a id="signup-link">Create one free</a></div>
+                </div>
+
+                <div id="dashboard-panel">
+                    <div class="dash-header">
+                        <div class="dash-welcome">
+                            <h2 id="dashboard-header">My Account</h2>
+                            <p id="welcome-msg">Manage your orders and profile</p>
+                        </div>
+                        <button id="logout-btn">Log out</button>
+                    </div>
+                    <div class="dash-stats">
+                        <div class="stat-card">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Total orders</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">$418</div>
+                            <div class="stat-label">Total spent</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">Gold</div>
+                            <div class="stat-label">Member tier</div>
+                        </div>
+                    </div>
+                    <div class="orders-title">Recent orders</div>
+                    <div class="order-row">
+                        <div class="order-emoji">📱</div>
+                        <div class="order-info">
+                            <div class="order-name">iPhone Case Midnight</div>
+                            <div class="order-meta">Order #FL-1042 · May 14, 2026</div>
+                        </div>
+                        <div class="order-amount">$29</div>
+                        <span class="status status-transit">In Transit</span>
+                    </div>
+                    <div class="order-row">
+                        <div class="order-emoji">👟</div>
+                        <div class="order-info">
+                            <div class="order-name">Air Runner Pro — Size 42</div>
+                            <div class="order-meta">Order #FL-1038 · May 3, 2026</div>
+                        </div>
+                        <div class="order-amount">$129</div>
+                        <span class="status status-delivered">Delivered</span>
+                    </div>
+                    <div class="order-row">
+                        <div class="order-emoji">🎧</div>
+                        <div class="order-info">
+                            <div class="order-name">Wireless Headphones X1</div>
+                            <div class="order-meta">Order #FL-1021 · Apr 18, 2026</div>
+                        </div>
+                        <div class="order-amount">$89</div>
+                        <span class="status status-delivered">Delivered</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CART DRAWER -->
+    <div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
+    <div class="cart-drawer" id="cart-drawer">
+        <div class="cart-head">
+            <h3>Your cart (<span id="cart-drawer-count">0</span>)</h3>
+            <button class="cart-close" onclick="closeCart()">✕</button>
+        </div>
+        <div class="cart-body" id="cart-body">
+            <div class="cart-empty">
+                <div>🛒</div>Your cart is empty
+            </div>
+        </div>
+        <div class="cart-foot" id="cart-foot" style="display:none">
+            <div class="cart-total"><span>Total</span><span id="cart-total-price">$0</span></div>
+            <button class="checkout-btn" id="checkout-btn">Proceed to checkout →</button>
+        </div>
+    </div>
+
+    <footer>
+        <span>© 2026 Flick Store · Demo site for Flick testing tool</span>
+        <span>Made with Flick 🎬</span>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const PRODUCTS = [
+            { id: 1, name: 'Air Runner Pro', price: 129, category: 'fashion', emoji: '👟', rating: '4.9 ★★★★★', badge: 'Bestseller' },
+            { id: 2, name: 'Wireless Headphones X1', price: 89, category: 'electronics', emoji: '🎧', rating: '4.8 ★★★★★', badge: '' },
+            { id: 3, name: 'Leather Wallet Slim', price: 49, category: 'accessories', emoji: '👜', rating: '4.7 ★★★★☆', badge: '' },
+            { id: 4, name: 'iPhone Case Midnight', price: 29, category: 'accessories', emoji: '📱', rating: '4.6 ★★★★☆', badge: 'Sale' },
+            { id: 5, name: 'Smart Watch Series 3', price: 199, category: 'electronics', emoji: '⌚', rating: '4.9 ★★★★★', badge: 'New' },
+            { id: 6, name: 'Canvas Backpack', price: 79, category: 'fashion', emoji: '🎒', rating: '4.5 ★★★★☆', badge: '' },
+            { id: 7, name: 'Sunglasses Retro', price: 59, category: 'accessories', emoji: '🕶️', rating: '4.7 ★★★★☆', badge: '' },
+            { id: 8, name: 'Running Shorts Pro', price: 39, category: 'fashion', emoji: '🩳', rating: '4.4 ★★★★☆', badge: '' },
+            { id: 9, name: 'Bluetooth Speaker', price: 69, category: 'electronics', emoji: '🔊', rating: '4.6 ★★★★☆', badge: '' },
+            { id: 10, name: 'Leather Sneakers', price: 149, category: 'fashion', emoji: '👞', rating: '4.8 ★★★★★', badge: 'New' },
+            { id: 11, name: 'Laptop Stand', price: 45, category: 'electronics', emoji: '💻', rating: '4.5 ★★★★☆', badge: '' },
+            { id: 12, name: 'Gold Chain Necklace', price: 89, category: 'accessories', emoji: '📿', rating: '4.7 ★★★★☆', badge: '' },
+        ]
+
+        let cart = []
+        let currentCategory = 'all'
+
+        function renderProducts(list) {
+            document.getElementById('product-grid').innerHTML = list.map(p => `
+    <div class="product-card" id="product-${p.id}">
+      <div class="product-img">
+        ${p.badge ? `<div class="product-badge">${p.badge}</div>` : ''}
+        ${p.emoji}
+      </div>
+      <div class="product-info">
+        <div class="product-cat">${p.category}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-rating">${p.rating}</div>
+        <div class="product-footer">
+          <div><span class="product-price">$${p.price}</span></div>
+          <button class="add-btn" id="add-to-cart-${p.id}" onclick="addToCart(${p.id})">Add</button>
+        </div>
+      </div>
+    </div>
+  `).join('')
+        }
+
+        function filterCategory(cat) {
+            currentCategory = cat
+            document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'))
+            document.getElementById('cat-' + cat)?.classList.add('active')
+            const filtered = cat === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.category === cat)
+            document.getElementById('products-title').textContent = cat === 'all' ? 'All Products' : cat.charAt(0).toUpperCase() + cat.slice(1)
+            renderProducts(filtered)
+        }
+
+        function sortProducts(type) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'))
+            document.getElementById('filter-' + type).classList.add('active')
+            const list = currentCategory === 'all' ? [...PRODUCTS] : PRODUCTS.filter(p => p.category === currentCategory)
+            if (type === 'price') list.sort((a, b) => a.price - b.price)
+            if (type === 'rating') list.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating))
+            renderProducts(list)
+        }
+
+        function addToCart(id) {
+            const p = PRODUCTS.find(x => x.id === id)
+            cart.push(p)
+            const btn = document.getElementById('add-to-cart-' + id)
+            btn.textContent = '✓ Added'
+            btn.classList.add('added')
+            setTimeout(() => { btn.textContent = 'Add'; btn.classList.remove('added') }, 1500)
+            updateCartUI()
+            showToast(`${p.emoji} ${p.name} added to cart`)
+        }
+
+        function updateCartUI() {
+            const count = cart.length
+            document.getElementById('cart-count').textContent = count
+            document.getElementById('cart-drawer-count').textContent = count
+            const total = cart.reduce((s, p) => s + p.price, 0)
+            document.getElementById('cart-total-price').textContent = '$' + total
+            const body = document.getElementById('cart-body')
+            const foot = document.getElementById('cart-foot')
+            if (count === 0) {
+                body.innerHTML = '<div class="cart-empty"><div>🛒</div>Your cart is empty</div>'
+                foot.style.display = 'none'
+            } else {
+                body.innerHTML = cart.map((p, i) => `
+      <div class="cart-item">
+        <div class="cart-item-emoji">${p.emoji}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${p.name}</div>
+          <div class="cart-item-price">$${p.price}</div>
+        </div>
+        <button class="cart-item-remove" onclick="removeFromCart(${i})">✕</button>
+      </div>
+    `).join('')
+                foot.style.display = 'block'
+            }
+        }
+
+        function removeFromCart(i) { cart.splice(i, 1); updateCartUI() }
+
+        function openCart() {
+            document.getElementById('cart-overlay').classList.add('open')
+            document.getElementById('cart-drawer').classList.add('open')
+        }
+
+        function closeCart() {
+            document.getElementById('cart-overlay').classList.remove('open')
+            document.getElementById('cart-drawer').classList.remove('open')
+        }
+
+        document.getElementById('cart-btn').onclick = openCart
+        document.getElementById('checkout-btn').onclick = () => showToast('🎉 Order placed! (demo)')
+
+        document.getElementById('login-btn').onclick = function () {
+            const email = document.getElementById('email-input').value.trim()
+            const password = document.getElementById('password-input').value.trim()
+            if (!email || !password) { showToast('Please fill in all fields'); return }
+            document.getElementById('auth-panel').style.display = 'none'
+            document.getElementById('dashboard-panel').style.display = 'block'
+            document.getElementById('dashboard-header').textContent = 'My Account'
+            document.getElementById('welcome-msg').textContent = `Signed in as ${email}`
+            showToast('✓ Signed in successfully')
+        }
+
+        document.getElementById('logout-btn').onclick = function () {
+            document.getElementById('dashboard-panel').style.display = 'none'
+            document.getElementById('auth-panel').style.display = 'block'
+            document.getElementById('email-input').value = ''
+            document.getElementById('password-input').value = ''
+            showToast('Signed out')
+        }
+
+        document.getElementById('google-btn').onclick = () => showToast('Google auth coming soon!')
+        document.getElementById('signup-link').onclick = () => showToast('Sign up coming soon!')
+
+        function showToast(msg) {
+            const t = document.getElementById('toast')
+            t.textContent = msg
+            t.classList.add('show')
+            clearTimeout(t._timer)
+            t._timer = setTimeout(() => t.classList.remove('show'), 2800)
+        }
+
+        renderProducts(PRODUCTS)
+    </script>
+</body>
+
+</html>
