@@ -1,5 +1,8 @@
 # Flick
 
+[![npm](https://img.shields.io/npm/v/@flick-run/cli)](https://www.npmjs.com/package/@flick-run/cli)
+[![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
 > YAML-driven automated testing for iOS, Android, and Web — with live preview, crash detection, and local AI analysis.
 
 ```bash
