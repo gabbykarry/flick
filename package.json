@@ -1,6 +1,6 @@
 {
   "name": "@flick-run/cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "YAML-driven automated testing for iOS, Android, and Web — with live preview, crash detection, and local AI analysis",
   "private": false,
   "type": "module",
@@ -19,7 +19,15 @@
     "prepublishOnly": "pnpm build"
   },
   "keywords": [
-    "testing", "mobile", "ios", "android", "appium", "yaml", "automation", "e2e", "react-native"
+    "testing",
+    "mobile",
+    "ios",
+    "android",
+    "appium",
+    "yaml",
+    "automation",
+    "e2e",
+    "react-native"
   ],
   "author": "Gabriel",
   "license": "MIT",
