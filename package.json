@@ -1,6 +1,6 @@
 {
   "name": "@flick-run/cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "YAML-driven automated testing for iOS, Android, and Web — with live preview, crash detection, and local AI analysis",
   "private": false,
   "type": "module",
